@@ -12,7 +12,7 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
-    public static int getInterval() {
+    public static Properties loadProperties() {
         Properties properties = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader()
                 .getResourceAsStream("rabbit.properties")) {
@@ -20,16 +20,18 @@ public class AlertRabbit {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Integer.parseInt(properties.getProperty("rabbit.interval"));
+        return properties;
     }
 
     public static void main(String[] args) {
+        Properties properties = loadProperties();
+        int interval = Integer.parseInt(properties.getProperty("rabbit.interval"));
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(getInterval())
+                    .withIntervalInSeconds(interval)
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
