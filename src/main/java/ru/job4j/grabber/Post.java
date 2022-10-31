@@ -79,11 +79,11 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return Objects.equals(link, post.link);
+        return id == post.id && Objects.equals(link, post.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(link);
+        return Objects.hash(id, link);
     }
 }
