@@ -27,7 +27,7 @@ public class HabrCareerParse implements Parse {
     private String retrieveDescription(String link) {
         String desc = null;
         try {
-            desc = Jsoup.connect(link).get().select(".vacancy-description__text").text();
+            desc = Jsoup.connect(link).get().select(".style-ugc").text();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,7 +50,6 @@ public class HabrCareerParse implements Parse {
                 String description = retrieveDescription(vacancyLink);
                 String date = String.format("%s", dateElement.attr("datetime"));
                 LocalDateTime dateTime = dateTimeParser.parse(date);
-                System.out.printf("%s%n%s %s%n", date, vacancyName, link);
                 list.add(new Post(vacancyName, vacancyLink, description, dateTime));
             });
         }
