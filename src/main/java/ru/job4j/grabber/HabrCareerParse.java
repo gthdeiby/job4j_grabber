@@ -16,8 +16,6 @@ public class HabrCareerParse implements Parse {
 
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    private static final String PAGE_LINK = String.format("%s/vacancies/java_developer", SOURCE_LINK);
-
     private static final int PAGE_COUNT = 5;
 
     private final DateTimeParser dateTimeParser;
@@ -31,7 +29,7 @@ public class HabrCareerParse implements Parse {
         try {
             desc = Jsoup.connect(link).get().select(".style-ugc").text();
         } catch (IOException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e);
         }
         return desc;
     }
@@ -58,7 +56,7 @@ public class HabrCareerParse implements Parse {
                 Elements rows = document.select(".vacancy-card__inner");
                 rows.forEach(row -> list.add(postParse(row)));
             } catch (IOException e) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(e);
             }
         }
         return list;
