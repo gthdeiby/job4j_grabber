@@ -38,7 +38,7 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public void save(Post post) {
         try (PreparedStatement ps = cnn.prepareStatement(
-                "insert into post(name, text, link, created) values(?, ?, ?, ?)",
+                "insert into post(name, text, link, created) values(?, ?, ?, ?) on conflict (link) do nothing",
                 Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getDescription());
@@ -100,16 +100,19 @@ public class PsqlStore implements Store, AutoCloseable {
                 .getResourceAsStream("grabber.properties")) {
             Properties config = new Properties();
             config.load(in);
-            PsqlStore store = new PsqlStore(config);
-            Post post = new Post(
-                    "Java-developer",
-                    "https://career.habr.com/",
-                    "Description",
-                    LocalDateTime.now()
-            );
-            store.save(post);
-            System.out.println(store.getAll());
-            System.out.println(store.findById(post.getId()));
+            try (PsqlStore store = new PsqlStore(config)) {
+                Post post = new Post(
+                        "Java-developer",
+                        "https://career.habr.com/",
+                        "Description",
+                        LocalDateTime.now()
+                );
+                store.save(post);
+                System.out.println(store.getAll());
+                System.out.println(store.findById(post.getId()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
